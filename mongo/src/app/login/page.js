@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';  // Import Axios
 
 export default function RegisterPage() {
   const [username, setUsername] = useState('');
@@ -16,16 +17,18 @@ export default function RegisterPage() {
     e.preventDefault();
 
     try {
-      const res = await fetch('http://localhost:3001/api/user', {
-        method: 'POST',
+      const response = await axios.post('http://localhost:3001/api/user', {
+        username,
+        email,
+        password,
+      }, {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, email, password }),
       });
 
-      if (res.ok) {
-        const data = await res.json();
+      // Check if the registration was successful
+      if (response.status === 201) {
         setSuccess('Registration successful!');
         setError('');
         
@@ -36,7 +39,12 @@ export default function RegisterPage() {
         setSuccess('');
       }
     } catch (err) {
-      setError('Error registering');
+      // Check if there is a response error
+      if (err.response) {
+        setError(err.response.data.message || 'Error registering'); // Display server error message
+      } else {
+        setError('Error registering'); // Handle other errors
+      }
       setSuccess('');
     }
   };
