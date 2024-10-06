@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function Register() {
+export default function RegisterPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const router = useRouter();
+  const [success, setSuccess] = useState('');
+
+  const router = useRouter();  // Initialize the Next.js router
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,31 +26,34 @@ export default function Register() {
 
       if (res.ok) {
         const data = await res.json();
-        alert('Registration successful! Token: ' + data.token);
-        router.push('/login'); // Redirect to login page after registration
+        setSuccess('Registration successful!');
+        setError('');
+        
+        // Redirect to tickets page after successful registration
+        router.push('/tickets');
       } else {
-        const { error } = await res.json();
-        setError(error || 'Registration failed');
+        setError('Registration failed.');
+        setSuccess('');
       }
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+      setError('Error registering');
+      setSuccess('');
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold mb-5">Register</h2>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Register</h1>
 
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {success && <p className="text-green-500 mb-4">{success}</p>}
 
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-2" htmlFor="username">
-            Username
-          </label>
+          <label className="block text-sm font-medium mb-2" htmlFor="username">Username</label>
           <input
-            id="username"
             type="text"
+            id="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
@@ -57,12 +62,10 @@ export default function Register() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-2" htmlFor="email">
-            Email
-          </label>
+          <label className="block text-sm font-medium mb-2" htmlFor="email">Email</label>
           <input
-            id="email"
             type="email"
+            id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -71,12 +74,10 @@ export default function Register() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-2" htmlFor="password">
-            Password
-          </label>
+          <label className="block text-sm font-medium mb-2" htmlFor="password">Password</label>
           <input
-            id="password"
             type="password"
+            id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
